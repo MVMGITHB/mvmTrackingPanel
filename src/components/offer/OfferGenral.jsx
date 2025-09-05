@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom"; // for edit mode
+import { useParams, useNavigate } from "react-router-dom";
 import { baseurl } from "../../helper/Helper";
 
 export default function OfferGenral() {
-  const { id } = useParams(); // if editing, campaign id will come from URL
+  const { id } = useParams(); // edit mode ID
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,13 +29,15 @@ export default function OfferGenral() {
     { key: "payout", value: "{payout}" },
   ]);
 
+  const [initialLoad, setInitialLoad] = useState(true);
+
   // Fetch advertisers
   const fetchAdvertisers = async () => {
     try {
       const res = await axios.get(`${baseurl}/api/advertisers/getAll`);
       setAdvertisers(res.data.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching advertisers", err);
     }
   };
 
@@ -43,10 +45,12 @@ export default function OfferGenral() {
   const fetchCampaign = async () => {
     if (!id) return;
     try {
-      const res = await axios.get(`${baseurl}/api/compaigns/getOneCompaign/${id}`);
+      const res = await axios.get(
+        `${baseurl}/api/compaigns/getOneCompaign/${id}`
+      );
       const data = res.data.data;
 
-      console.log("data",data)
+      console.log("Fetched campaign:", data);
 
       setFormData({
         offerName: data.offerName || "",
@@ -57,10 +61,10 @@ export default function OfferGenral() {
         type: data.type || "web",
         trakingUrl: data.trakingUrl || "",
         payout: data.payout || "",
-        advertiser: data.advertiser._id || "",
+        advertiser: data.advertiser?._id || data.advertiser || "",
       });
 
-      // extract baseUrl + params back from tracking url if available
+      // Extract baseUrl + params from existing tracking URL
       if (data.trakingUrl) {
         const [url, queryString] = data.trakingUrl.split("?");
         setBaseUrl(url);
@@ -77,23 +81,32 @@ export default function OfferGenral() {
     }
   };
 
+  // Load advertisers first, then campaign
   useEffect(() => {
-    fetchAdvertisers();
-    fetchCampaign();
+    const loadData = async () => {
+      await fetchAdvertisers();
+      await fetchCampaign();
+      setInitialLoad(false);
+    };
+    loadData();
   }, [id]);
 
-  // Build tracking URL dynamically
+  // Build tracking URL dynamically (skip first load)
   useEffect(() => {
+    if (initialLoad) return;
+
     const query = params
       .filter((p) => p.key && p.value)
       .map((p) => `${encodeURIComponent(p.key)}=${p.value.trim()}`)
       .join("&");
+
     setFormData((prev) => ({
       ...prev,
       trakingUrl: `${baseUrl}${query ? "?" + query : ""}`,
     }));
-  }, [baseUrl, params]);
+  }, [baseUrl, params, initialLoad]);
 
+  // Handlers
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -113,17 +126,18 @@ export default function OfferGenral() {
     setLoading(true);
     try {
       if (id) {
-        // update mode
-        await axios.patch(`${baseurl}/api/compaigns/updateCompaign/${id}`, formData);
+        await axios.patch(
+          `${baseurl}/api/compaigns/updateCompaign/${id}`,
+          formData
+        );
         alert("Compaign updated successfully!");
       } else {
-        // create mode
         await axios.post(`${baseurl}/api/compaigns/creteCompaign`, formData);
         alert("Compaign created successfully!");
       }
-    //   navigate("/compaigns"); // redirect after save
+      // navigate("/compaigns"); // optional redirect
     } catch (err) {
-      console.error(err);
+      console.error("Error saving compaign", err);
       alert("Error saving compaign");
     } finally {
       setLoading(false);
@@ -137,7 +151,8 @@ export default function OfferGenral() {
   };
 
   const addParam = () => setParams([...params, { key: "", value: "" }]);
-  const removeParam = (index) => setParams(params.filter((_, i) => i !== index));
+  const removeParam = (index) =>
+    setParams(params.filter((_, i) => i !== index));
 
   const inputStyle =
     "w-full h-[45px] px-3 bg-gray-50 border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200";
@@ -180,7 +195,9 @@ export default function OfferGenral() {
         </select>
 
         {/* Devices */}
-        <label className="block text-gray-700 font-semibold mb-2">Devices</label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          Devices
+        </label>
         <div className="flex gap-4">
           {["cctv", "mobile", "tablet", "desktop"].map((device) => (
             <label key={device} className="flex items-center gap-2">
