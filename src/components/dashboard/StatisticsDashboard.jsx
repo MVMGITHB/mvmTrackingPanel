@@ -311,6 +311,7 @@ const StatisticsDashboard = () => {
               {[
                 "Campaign",
                 "Clicks",
+                'uniqueClick',
                 "Payout",
                 "Payout in INR",
                 "Conversions",

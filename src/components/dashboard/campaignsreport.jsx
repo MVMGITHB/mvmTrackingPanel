@@ -88,19 +88,27 @@ export default function CampaignReport({url}) {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
         <div className="flex gap-2 flex-wrap items-center">
           <div className="flex gap-2">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            />
-          </div>
+  <input
+    type="date"
+    value={startDate}
+    onChange={(e) => {
+      setStartDate(e.target.value);
+      fetchReport(); // run on change
+    }}
+    className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+  />
+  <input
+    type="date"
+    value={endDate}
+    onChange={(e) => {
+      setEndDate(e.target.value);
+      fetchReport(); // run on change
+    }}
+    className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+  />
+</div>
+
+
           <button
             onClick={fetchReport}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
