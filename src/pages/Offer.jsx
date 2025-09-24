@@ -92,6 +92,7 @@ const Offer = () => {
       devices: values.devices,
       type: values.type,
       trakingUrl: values.trakingUrl,
+      visibility: values.visibility,
       payout: values.payout,
       startDate,
       endDate,
@@ -223,6 +224,19 @@ const Offer = () => {
               ))}
             </Select>
           </Form.Item>
+
+
+          <Form.Item
+  name="visibility"
+  label="Visibility"
+  rules={[{ required: true, message: "Select visibility" }]}
+>
+  <Select placeholder="Select visibility">
+    <Select.Option value="Public">Public</Select.Option>
+    <Select.Option value="Private">Private</Select.Option>
+  </Select>
+</Form.Item>
+
 
           <Form.Item
             name="trakingUrl"

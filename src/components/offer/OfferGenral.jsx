@@ -60,6 +60,7 @@ export default function OfferGenral() {
         endDate: data.endDate ? data.endDate.split("T")[0] : "",
         type: data.type || "web",
         trakingUrl: data.trakingUrl || "",
+        visibility: data.visibility || "",
         payout: data.payout || "",
         advertiser: data.advertiser?._id || data.advertiser || "",
       });
@@ -247,6 +248,21 @@ export default function OfferGenral() {
           <option value="app">App</option>
           <option value="apk">APK</option>
         </select>
+
+
+  {/* for type public or private */}
+  <label className="block text-gray-700 font-semibold mb-2">Compaign Type</label>
+  <select
+  name="visibility"
+  value={formData.visibility}
+  onChange={handleChange}
+  className={inputStyle}
+>
+  <option value="">Select Visibility</option>
+  <option value="Public">Public</option>
+  <option value="Private">Private</option>
+</select>
+
 
         {/* Payout */}
         <label className="block text-gray-700 font-semibold mb-2">Payout</label>

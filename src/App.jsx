@@ -37,6 +37,7 @@ import {AccountTab} from "./components/Tab";
 import {ContactTab} from "./components/Tab";
 import {AffiliateTab} from "./components/Tab";
 import {PostbackTab} from "./components/Tab";
+import { AffiliateTab1 } from "./components/offer/AffiliateTab1";
 
 
 
@@ -146,7 +147,7 @@ const ProtectedLayout = () => {
           <Route path="general" element={<OfferGenral />} />
           <Route path="account-balance" element={<AccountTab />} />
           <Route path="contacts" element={<ContactTab />} />
-          <Route path="affiliates" element={<AffiliateTab />} />
+          <Route path="affiliates" element={<AffiliateTab1 />} />
           <Route path="postback-url" element={<PostbackTab />} />
           
           {/* Redirect to General tab by default */}

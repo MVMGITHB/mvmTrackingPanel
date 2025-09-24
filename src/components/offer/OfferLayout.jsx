@@ -8,10 +8,11 @@ export default function OfferLayout() {
 
   const tabs = [
     { name: "General", path: "general" },
-    { name: "Account Balance", path: "account-balance" },
-    { name: "Contacts", path: "contacts" },
     { name: "Affiliates", path: "affiliates" },
-    { name: "Postback URL", path: "postback-url" },
+    // { name: "Account Balance", path: "account-balance" },
+    // { name: "Contacts", path: "contacts" },
+    
+    // { name: "Postback URL", path: "postback-url" },
   ];
 
   return (

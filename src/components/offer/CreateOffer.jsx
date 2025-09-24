@@ -13,6 +13,7 @@ export default function CreateOffer() {
     trakingUrl: "",
     payout: "",
     advertiser: "",
+    visibility:""
   });
 
   const [advertisers, setAdvertisers] = useState([]);
@@ -216,6 +217,21 @@ export default function CreateOffer() {
             </option>
           ))}
         </select>
+
+
+        {/* for type public or private */}
+         <label className="block text-gray-700 font-semibold mb-2">Type</label>
+        <select
+  name="visibility"
+  value={formData.visibility}
+  onChange={handleChange}
+  className={inputStyle}
+>
+  <option value="">Select Visibility</option>
+  <option value="Public">Public</option>
+  <option value="Private">Private</option>
+</select>
+
 
         {/* ==== Tracking URL Builder ==== */}
         <div className="mt-3 space-y-2">

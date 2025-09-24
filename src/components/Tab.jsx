@@ -7,6 +7,8 @@ export const GeneralTab = () => {
 };
 
 
+import UpdateAllowedAffiliates from "./offer/UpdateAllowedAffiliates";
+
 import { useParams } from "react-router-dom";
 // tabs/AccountTab.jsx
 export const AccountTab = () => {
@@ -22,10 +24,12 @@ export const ContactTab = () => {
 export const AffiliateTab = () => {
 
     const { id } = useParams();
-  return <div>
-    Affiliate Content
-    id:{id}
-    </div>;
+    // compaignId
+  return (
+   <div>
+       id is :{id}
+    </div>
+    )
 };
 
 // tabs/PostbackTab.jsx
