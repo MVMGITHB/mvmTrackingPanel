@@ -26,7 +26,7 @@ export default function OfferList() {
 //     setLoading(false);
 //   };
 
-console.log(update)
+
 
 
   const fetchCompaigns = async () => {
