@@ -16,3 +16,80 @@
   -ms-overflow-style: none !important; /* IE & Edge */
   scrollbar-width: none !important; /* Firefox */
 }
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+.custom-table .ant-table {
+  background: transparent !important;
+}
+
+.custom-table .ant-table-container {
+  background: transparent !important;
+}
+
+.custom-table .ant-table-thead > tr > th {
+  background-color: #e8f1ff !important;
+  color: #000 !important;
+  font-weight: 600;
+}
+
+.custom-table .ant-table-tbody > tr > td {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+
+.custom-table .ant-table-tbody tr > .ant-table-cell {
+  border-color: #d6e4ff !important;
+}
+
+
+.custom-table .ant-table-tbody > tr > td {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+.custom-table .ant-table-row:hover > td {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+
+/* Table Background */
+.custom-conversion-table .ant-table-container {
+  background-color: #eff6ff !important; /* blue-50 */
+}
+
+/* Header */
+.custom-conversion-table .ant-table-thead > tr > th {
+  background-color: #dbeafe !important;  /* blue-100 */
+  color: #1e293b !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #bfdbfe !important;
+}
+
+/* Rows */
+.custom-conversion-table .ant-table-tbody > tr > td {
+  background-color: #eff6ff !important; /* blue-50 */
+  color: #1e293b !important;
+}
+
+.custom-conversion-table .ant-table-tbody > tr:nth-child(even) > td {
+  background-color: #dbeafe !important; /* blue-100 */
+}
+
+/* Hover */
+.custom-conversion-table .ant-table-row:hover > td {
+  background-color: #bfdbfe !important; /* blue-200 */
+}

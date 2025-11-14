@@ -68,7 +68,7 @@ const UpdateAllowedAffiliates = ({ compaignId }) => {
   };
 
   return (
-    <div className=" w-[80%] mx-auto bg-white shadow-lg p-6 rounded-lg mt-4">
+    <div className=" w-[80%] mx-auto bg-blue-50 shadow-lg p-6 rounded-lg mt-4">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
         Update Allowed Affiliates
       </h2>

@@ -156,17 +156,24 @@ export default function OfferGenral() {
     setParams(params.filter((_, i) => i !== index));
 
   const inputStyle =
-    "w-full h-[45px] px-3 bg-gray-50 border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200";
+    "w-full h-[45px] px-3 bg-blue-50 border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200";
 
   return (
-    <div className="mx-auto bg-white shadow-lg rounded-2xl p-8 mt-10">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">
-        {id ? "Edit Compaign" : "Create Compaign"}
-      </h2>
+    <div className="mx-auto bg-blue-50 border border-blue-100 shadow-xl rounded-2xl p-10 mt-10">
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Offer Name */}
-        <label className="block text-gray-700 font-semibold mb-2">
+  {/* Title */}
+  <h2 className="text-3xl font-extrabold mb-8 text-gray-800 tracking-tight">
+    {id ? "Edit Campaign" : "Create Campaign"}
+  </h2>
+
+  <form onSubmit={handleSubmit} className="space-y-8">
+
+    {/* ===== Campaign Info ===== */}
+    <div className="bg-blue-50 rounded-xl shadow-md border border-gray-100 p-6 space-y-4">
+      <h3 className="text-lg font-semibold text-gray-700 mb-2">Campaign Details</h3>
+
+      <div>
+        <label className="block text-gray-600 font-medium mb-1">
           Offer Name <span className="text-red-500">*</span>
         </label>
         <input
@@ -175,33 +182,34 @@ export default function OfferGenral() {
           value={formData.offerName}
           onChange={handleChange}
           className={inputStyle}
-          placeholder="Offer Name"
+          placeholder="Enter Offer Name"
           required
         />
+      </div>
 
-        {/* Status */}
-        <label className="block text-gray-700 font-semibold mb-2">Status</label>
+      {/* Status */}
+      <div>
+        <label className="block text-gray-600 font-medium mb-1">Status</label>
         <select
           name="status"
           value={formData.status}
           onChange={handleChange}
           className={inputStyle}
         >
-          <option value="Active">Active</option>
-          <option value="Blocked">Blocked</option>
-          <option value="Deleted">Deleted</option>
-          <option value="Pause">Pause</option>
-          <option value="Pending">Pending</option>
-          <option value="Rejected">Rejected</option>
+          <option>Active</option>
+          <option>Blocked</option>
+          <option>Pause</option>
+          <option>Pending</option>
+          <option>Rejected</option>
         </select>
+      </div>
 
-        {/* Devices */}
-        <label className="block text-gray-700 font-semibold mb-2">
-          Devices
-        </label>
-        <div className="flex gap-4">
+      {/* Devices */}
+      <div>
+        <label className="block text-gray-600 font-medium mb-2">Devices</label>
+        <div className="flex flex-wrap gap-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
           {["cctv", "mobile", "tablet", "desktop"].map((device) => (
-            <label key={device} className="flex items-center gap-2">
+            <label key={device} className="flex items-center gap-2 text-gray-700">
               <input
                 type="checkbox"
                 value={device}
@@ -212,60 +220,49 @@ export default function OfferGenral() {
             </label>
           ))}
         </div>
+      </div>
 
-        {/* Dates */}
-        <label className="block text-gray-700 font-semibold mb-2">
-          Start Date
-        </label>
-        <input
-          type="date"
-          name="startDate"
-          value={formData.startDate}
-          onChange={handleChange}
-          className={inputStyle}
-        />
+      {/* Dates */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-gray-600 font-medium mb-1">
+            Start Date
+          </label>
+          <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} className={inputStyle} />
+        </div>
 
-        <label className="block text-gray-700 font-semibold mb-2">
-          End Date
-        </label>
-        <input
-          type="date"
-          name="endDate"
-          value={formData.endDate}
-          onChange={handleChange}
-          className={inputStyle}
-        />
+        <div>
+          <label className="block text-gray-600 font-medium mb-1">
+            End Date
+          </label>
+          <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} className={inputStyle} />
+        </div>
+      </div>
 
-        {/* Type */}
-        <label className="block text-gray-700 font-semibold mb-2">Type</label>
-        <select
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          className={inputStyle}
-        >
+      {/* Type */}
+      <div>
+        <label className="block text-gray-600 font-medium mb-1">Type</label>
+        <select name="type" value={formData.type} onChange={handleChange} className={inputStyle}>
           <option value="web">Web</option>
           <option value="app">App</option>
           <option value="apk">APK</option>
         </select>
+      </div>
+
+      {/* Visibility */}
+      <div>
+        <label className="block text-gray-600 font-medium mb-1">Campaign Type</label>
+        <select name="visibility" value={formData.visibility} onChange={handleChange} className={inputStyle}>
+          <option value="">Select Visibility</option>
+          <option value="Public">Public</option>
+          <option value="Private">Private</option>
+        </select>
+      </div>
 
 
-  {/* for type public or private */}
-  <label className="block text-gray-700 font-semibold mb-2">Compaign Type</label>
-  <select
-  name="visibility"
-  value={formData.visibility}
-  onChange={handleChange}
-  className={inputStyle}
->
-  <option value="">Select Visibility</option>
-  <option value="Public">Public</option>
-  <option value="Private">Private</option>
-</select>
-
-
-        {/* Payout */}
-        <label className="block text-gray-700 font-semibold mb-2">Payout</label>
+      {/* Payout */}
+      <div>
+        <label className="block text-gray-600 font-medium mb-1">Payout</label>
         <input
           type="text"
           name="payout"
@@ -274,11 +271,11 @@ export default function OfferGenral() {
           className={inputStyle}
           placeholder="Enter payout (e.g. 10.00)"
         />
+      </div>
 
-        {/* Advertiser */}
-        <label className="block text-gray-700 font-semibold mb-2">
-          Advertiser
-        </label>
+      {/* Advertiser */}
+      <div>
+        <label className="block text-gray-600 font-medium mb-1">Advertiser</label>
         <select
           name="advertiser"
           value={formData.advertiser}
@@ -292,69 +289,76 @@ export default function OfferGenral() {
             </option>
           ))}
         </select>
+      </div>
+    </div>
 
-        {/* ==== Tracking URL Builder ==== */}
-        <div className="mt-3 space-y-2">
-          <label className="block text-gray-700 font-semibold mb-2">
-            Tracking URL
-          </label>
+    {/* ===== Tracking URL Builder ===== */}
+    <div className="bg-blue-50 rounded-xl shadow-md border border-gray-100 p-6 space-y-4">
+      <h3 className="text-lg font-semibold text-gray-700">Tracking URL Builder</h3>
 
+      {/* Base URL */}
+      <input
+        type="url"
+        value={baseUrl}
+        onChange={(e) => setBaseUrl(e.target.value)}
+        className={inputStyle}
+        placeholder="Enter base tracking URL"
+      />
+
+      {/* Dynamic Params */}
+      {params.map((p, i) => (
+        <div key={i} className="flex gap-3">
           <input
-            type="url"
-            value={baseUrl}
-            onChange={(e) => setBaseUrl(e.target.value)}
-            className={inputStyle}
-            placeholder="Enter base URL (e.g. https://yourdomain.com/tracking)"
+            type="text"
+            value={p.key}
+            onChange={(e) => updateParam(i, "key", e.target.value)}
+            className="flex-1 px-3 py-2 border rounded-lg shadow-sm"
+            placeholder="Parameter key"
           />
-
-          {params.map((p, i) => (
-            <div key={i} className="flex gap-2">
-              <input
-                type="text"
-                value={p.key}
-                onChange={(e) => updateParam(i, "key", e.target.value)}
-                className="flex-1 px-3 py-2 border rounded-lg"
-                placeholder="Parameter key"
-              />
-              <input
-                type="text"
-                value={p.value}
-                onChange={(e) => updateParam(i, "value", e.target.value)}
-                className="flex-1 px-3 py-2 border rounded-lg"
-                placeholder="Parameter value"
-              />
-              <button
-                type="button"
-                onClick={() => removeParam(i)}
-                className="px-3 py-2 bg-red-500 text-white rounded-lg"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
+          <input
+            type="text"
+            value={p.value}
+            onChange={(e) => updateParam(i, "value", e.target.value)}
+            className="flex-1 px-3 py-2 border rounded-lg shadow-sm"
+            placeholder="Parameter value"
+          />
           <button
             type="button"
-            onClick={addParam}
-            className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg"
+            onClick={() => removeParam(i)}
+            className="px-3 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700"
           >
-            + Add parameter
+            ✕
           </button>
         </div>
+      ))}
 
-        {/* Preview */}
-        <p className="mt-3 text-sm text-gray-600 break-all">
-          <strong>Generated URL:</strong> {formData.trakingUrl}
-        </p>
+      <button
+        type="button"
+        onClick={addParam}
+        className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700"
+      >
+        + Add parameter
+      </button>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-[300px] mx-auto h-[50px] bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-md font-semibold disabled:opacity-50"
-        >
-          {loading ? "Saving..." : id ? "Update" : "Save"}
-        </button>
-      </form>
+      {/* Preview */}
+      <p className="mt-3 text-sm text-gray-600 break-all border p-3 bg-blue-50 rounded-lg">
+        <strong>Generated URL:</strong> {formData.trakingUrl}
+      </p>
     </div>
+
+    {/* Submit Button */}
+    <div className="text-center">
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-[300px] h-[50px] bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700 transition font-semibold disabled:opacity-50"
+      >
+        {loading ? "Saving..." : id ? "Update Campaign" : "Create Campaign"}
+      </button>
+    </div>
+
+  </form>
+</div>
+
   );
 }

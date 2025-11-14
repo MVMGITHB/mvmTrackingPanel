@@ -131,12 +131,12 @@ export default function AffiliateGenral() {
   };
 
   const inputStyle =
-    "w-full h-[45px] px-3 bg-gray-50 border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200";
+    "w-full h-[45px] px-3 bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff] border border-gray-200 rounded-lg shadow-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200";
 
   return (
-    <div className="mx-auto bg-white shadow-lg rounded-2xl p-8 mt-10">
+    <div className="mx-auto bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff] shadow-lg rounded-2xl p-8 mt-10">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">Edit Affiliate</h2>
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5 bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff]">
         {/* ==== Basic Affiliate Info ==== */}
 
         <label className="block text-gray-700 font-semibold mb-2">First Name <span className="text-red-500">*</span></label>

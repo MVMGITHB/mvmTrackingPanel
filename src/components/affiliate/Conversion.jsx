@@ -1,0 +1,22 @@
+
+
+import React from "react";
+
+// import ConversionReport from "../components/conversion/ConversionReport";
+import ConversionReport from "../conversion/ConversionReport"
+
+const Conversion = ({id}) => {
+  return (
+    <div className="p-6 ">
+      {/* Page Heading */}
+      {/* <h1 className="text-5xl md:text-6xl font-serif font-extrabold text-center mb-12 mt-12 text-gray-900 drop-shadow-md tracking-tight">
+        🛒 Conversion
+      </h1> */}
+
+      {/* Offers Table */}
+      <ConversionReport  id={id}/>
+    </div>
+  );
+};
+
+export default Conversion;

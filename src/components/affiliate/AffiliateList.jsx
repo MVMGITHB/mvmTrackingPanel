@@ -1,6 +1,6 @@
 // pages/AdvertisersList.jsx
 import { useEffect, useState } from "react";
-import { Table, message } from "antd";
+import { Button, Popconfirm, Table, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -30,6 +30,17 @@ export default function AffiliateList() {
     fetchAdvertisers();
   }, []);
 
+   const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${baseurl}/api/affiliates/deleteAffiliate/${id}`);
+      message.success("Affiliate deleted.");
+      fetchAdvertisers();
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to delete affiliate.");
+    }
+  };
+
   // Ant Design table columns
   const columns = [
     {
@@ -53,10 +64,26 @@ export default function AffiliateList() {
       dataIndex: ["manager", "name"],
       render: (_, record) => record.manager?.name || "N/A",
     },
+
+     {
+      title: "Delete",
+      render: (_, record) => (
+        <Popconfirm
+          title="Delete this affiliate?"
+          onConfirm={() => handleDelete(record._id)}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button danger type="link">
+            Delete
+          </Button>
+        </Popconfirm>
+      ),
+    },
   ];
 
   return (
-    <div style={{ padding: "20px", background: "#fff" }}>
+    <div style={{ padding: "20px" }} className="bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff]">
          <div className="flex items-center justify-between mb-6">
       {/* Left - Title */}
       <h2 className="text-2xl font-bold text-gray-800">
@@ -72,13 +99,17 @@ export default function AffiliateList() {
       </button>
     </div>
 
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="_id"
-        loading={loading}
-        bordered
-      />
+      
+  <Table
+  className="custom-table"
+  columns={columns}
+  dataSource={data}
+  rowKey="_id"
+  loading={loading}
+  bordered
+/>
+
+
     </div>
   );
 }

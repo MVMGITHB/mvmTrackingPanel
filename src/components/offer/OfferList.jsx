@@ -72,29 +72,37 @@ export default function OfferList() {
   ];
 
   return (
-    <div style={{ padding: "20px", background: "#fff" }}>
-         <div className="flex items-center justify-between mb-6">
-      {/* Left - Title */}
-      <h2 className="text-2xl font-bold text-gray-800">
-       Offer
-      </h2>
+   <div className="p-6 bg-blue-50 rounded-2xl shadow-lg border border-blue-100">
 
-      {/* Right - Create Button */}
-      <button
-        onClick={() => navigate("/offers/crete")}
-        className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition duration-200"
-      >
-        + Create
-      </button>
-    </div>
+  {/* Header Row */}
+  <div className="flex items-center justify-between mb-6">
 
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="_id"
-        loading={loading}
-        bordered
-      />
-    </div>
+    {/* Left - Title */}
+    <h2 className="text-2xl font-bold text-gray-800">Offers</h2>
+
+    {/* Right - Create Button */}
+    <button
+      onClick={() => navigate("/offers/crete")}
+      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition"
+    >
+      + Create Offer
+    </button>
+  </div>
+
+  {/* Table */}
+  <div className="rounded-xl overflow-hidden shadow-lg">
+    <Table
+   
+      columns={columns}
+      dataSource={data}
+      rowKey="_id"
+      loading={loading}
+      pagination={{ pageSize: 10 }}
+      className="offer-table custom-table"
+    />
+  </div>
+
+</div>
+
   );
 }

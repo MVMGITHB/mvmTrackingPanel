@@ -101,7 +101,15 @@ const ProtectedLayout = () => {
     <Header/>
     <div className="flex  bg-gray-100">
       <Sidebar />
-      <div className="flex-1 p-6 overflow-y-auto" id="hide-scrollbar">
+      <div id="hide-scrollbar"
+  className="
+    flex-1 p-6 overflow-y-auto
+
+    bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff]
+    animate-[gradientMove_8s_ease_infinite]
+
+    bg-[length:300%_300%]
+  ">
              
          {/* <PublisherPanel/> */}
 
