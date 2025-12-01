@@ -11,17 +11,20 @@ import {
   ResponsiveContainer,
 } from "recharts";
 // import { baseurl } from "";
-import {baseurl} from '../../helper/Helper'
+import { baseurl } from "../../helper/Helper";
 import { useParams } from "react-router-dom";
 
 const DashboardStats = () => {
-
-   const { id } = useParams();
+  const { id } = useParams();
 
   const [dailyStats, setDailyStats] = useState({
     clicks: 0,
     hosts: 0,
     conversions: 0,
+    secondConversions: 0,
+    revenue: 0,
+    secondRevenue: 0,
+    totalConversions: 0, // conversions + secondConversions
   });
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +34,7 @@ const DashboardStats = () => {
       try {
         setLoading(true);
 
-         const response = await axios.get(
+        const response = await axios.get(
           `${baseurl}/api/affiliates/getOneAffiliate/${id}`
         );
 
@@ -46,24 +49,41 @@ const DashboardStats = () => {
           return;
         }
 
-        
-
         // ✅ Correct endpoints
         const [dailyRes, last10Res] = await Promise.all([
           axios.get(`${baseurl}/api/reports/dailypubId/${pubId}`),
           axios.get(`${baseurl}/api/reports/last10dayspubId/${pubId}`),
-          
         ]);
 
-        // ✅ Daily stats
-        setDailyStats(dailyRes.data || { clicks: 0, hosts: 0, conversions: 0 });
+        // ✅ Daily stats with secondConversions / secondRevenue
+        const d = dailyRes.data || {};
+        const clicks = Number(d.clicks) || 0;
+        const hosts = Number(d.hosts) || 0;
+        const conversions = Number(d.conversions) || 0;
+        const secondConversions = Number(d.secondConversions) || 0;
+        const revenue = Number(d.revenue) || 0;
+        const secondRevenue = Number(d.secondRevenue) || 0;
 
-        // ✅ Clean up chart data (ensure numeric)
+        const totalConversions = conversions + secondConversions;
+
+        setDailyStats({
+          clicks,
+          hosts,
+          conversions,
+          secondConversions,
+          revenue,
+          secondRevenue,
+          totalConversions,
+        });
+
+        // ✅ Clean up chart data (ensure numeric, incl. second* fields)
         const cleanData = (last10Res.data?.data || []).map((item) => ({
           ...item,
           clicks: Number(item.clicks) || 0,
           conversions: Number(item.conversions) || 0,
           revenue: Number(item.revenue) || 0,
+          secondConversions: Number(item.secondConversions) || 0,
+          secondRevenue: Number(item.secondRevenue) || 0,
         }));
 
         setChartData(cleanData);
@@ -78,7 +98,7 @@ const DashboardStats = () => {
     };
 
     fetchStats();
-  }, []);
+  }, [id]); // keep id as dependency, everything else same
 
   if (loading) {
     return (
@@ -99,7 +119,8 @@ const DashboardStats = () => {
         {[
           { title: "Clicks", value: dailyStats.clicks },
           { title: "Hosts", value: dailyStats.hosts },
-          { title: "Conversions", value: dailyStats.conversions },
+          // 🔴 show totalConversions = conversions + secondConversions
+          { title: "Conversions", value: dailyStats.totalConversions },
         ].map((item, i) => (
           <div
             key={i}
@@ -154,13 +175,23 @@ const DashboardStats = () => {
                 strokeWidth={2}
                 dot={{ r: 3 }}
               />
-              {/* 🟢 Conversions Line */}
+              {/* 🟢 Unique Conversions Line */}
               <Line
                 yAxisId="left"
                 type="monotone"
                 dataKey="conversions"
                 stroke="#22c55e"
-                name="Conversions"
+                name="Unique Conversions"
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
+              {/* 🔵 Non-unique / Second Conversions Line */}
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="secondConversions"
+                stroke="#3b82f6"
+                name="Non-unique Conversions"
                 strokeWidth={2}
                 dot={{ r: 3 }}
               />
@@ -171,6 +202,16 @@ const DashboardStats = () => {
                 dataKey="revenue"
                 stroke="#eab308"
                 name="Revenue (USD)"
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
+              {/* 🟣 Second Revenue Line */}
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="secondRevenue"
+                stroke="#6366f1"
+                name="Second Revenue (USD)"
                 strokeWidth={2}
                 dot={{ r: 3 }}
               />
