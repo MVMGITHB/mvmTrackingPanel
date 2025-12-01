@@ -1,15 +1,14 @@
 // pages/AffiliateLayout.jsx
 import { NavLink, Outlet, useParams } from "react-router-dom";
 
-export default function AffiliateLayout() {
+export default function ClickLayout() {
   const { id } = useParams();
 
   const tabs = [
-    { name: "General", path: "general" },
-    { name: "Dashboard", path: "account-balance" },
-    { name: "My Offers", path: "contacts" },
-    { name: "Conversion", path: "affiliates" },
-    { name: "Click", path: "affiliateClick" },
+    { name: "General", path: "detail" },
+    // { name: "Dashboard", path: "account-balance" },
+    // { name: "My Offers", path: "contacts" },
+    // { name: "Conversion", path: "affiliates" },
   ];
 
   return (
@@ -27,7 +26,7 @@ export default function AffiliateLayout() {
           {tabs.map((tab) => (
             <NavLink
               key={tab.path}
-              to={`/affiliates/${id}/${tab.path}`}
+              to={`/click/${id}/${tab.path}`}
               className={({ isActive }) =>
                 `
                 relative pb-3 font-semibold text-[16px]

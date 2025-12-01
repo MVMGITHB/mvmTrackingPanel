@@ -117,7 +117,7 @@ export default function OfferDetailsFull({ offer }) {
   };
 
   const buildTrackingUrl = (compId, pubId) =>
-    `https://offer.mvmtracking.com/api/clicks?campaign_id=${compId}&pub_id=${pubId}&originalClick={}`;
+    `https://offer.mvmtracking.com/api/clicks?campaign_id=${compId}&pub_id=${pubId}&affiliate_id={your_id}&sub1={your_sub}`;
 
   // Static labels
   const accessibility = "Accessible";

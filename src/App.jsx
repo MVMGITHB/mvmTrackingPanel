@@ -38,20 +38,12 @@ import {ContactTab} from "./components/Tab";
 import {AffiliateTab} from "./components/Tab";
 import {PostbackTab} from "./components/Tab";
 import { AffiliateTab1 } from "./components/offer/AffiliateTab1";
-
-
-
-// ProtectedRoute Component
-// const ProtectedRoute = ({ children }) => {
-
-  
-//   const authData = localStorage.getItem("authToken");
- 
-//   // const token = authData ? JSON.parse(authData)?.token : null;
-//   const token = authData ? authData : null;
-//   return token ? children : <Navigate to="/login" replace />;
-
-// };
+import ClickPage from "./pages/ClickPage";
+import ClickLayout from "./components/click/ClickLayout";
+import ClickList from "./components/click/ClickList";
+import ClickDetails from "./components/click/ClickDetails";
+import AffiliateClick from "./components/affiliate/AffiliateClick";
+import AffiliateClickDetails from "./components/affiliate/click/ClickDetails";
 
 
 const ProtectedRoute = ({ children }) => {
@@ -98,20 +90,22 @@ const ProtectedLayout = () => {
   return (
 
     <>
-    <Header/>
+    
     <div className="flex  bg-gray-100">
       <Sidebar />
       <div id="hide-scrollbar"
   className="
-    flex-1 p-6 overflow-y-auto
+    flex-1  overflow-y-auto
 
     bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff]
     animate-[gradientMove_8s_ease_infinite]
 
-    bg-[length:300%_300%]
+    bg-[length:300%_300%] h-[100vh]
   ">
              
          {/* <PublisherPanel/> */}
+
+         <Header/>
 
         <Routes>
 
@@ -136,6 +130,9 @@ const ProtectedLayout = () => {
           <Route path="contacts" element={<ContactTab />} />
           <Route path="affiliates" element={<AffiliateTab />} />
           <Route path="postback-url" element={<PostbackTab />} />
+          <Route path="affiliateClick" element={<AffiliateClick />} />
+
+           <Route path="affiliateClick/:clickId" element={<AffiliateClickDetails />} />
           
           {/* Redirect to General tab by default */}
           <Route index element={<Navigate to="general" replace />} />
@@ -157,6 +154,8 @@ const ProtectedLayout = () => {
           <Route path="contacts" element={<ContactTab />} />
           <Route path="affiliates" element={<AffiliateTab1 />} />
           <Route path="postback-url" element={<PostbackTab />} />
+         
+
           
           {/* Redirect to General tab by default */}
           <Route index element={<Navigate to="general" replace />} />
@@ -180,6 +179,21 @@ const ProtectedLayout = () => {
           
           {/* Redirect to General tab by default */}
           <Route index element={<Navigate to="general" replace />} />
+        </Route>
+
+        {/* for click */}
+        <Route path="/click" element={<ClickList />} />
+        <Route path="/click/new" element={<New />} />
+        {/* Layout with tabs */}
+        <Route path="/click/:id" element={<ClickLayout />}>
+          <Route path="detail" element={<ClickDetails />} />
+          <Route path="account-balance" element={<AccountTab />} />
+          <Route path="contacts" element={<ContactTab />} />
+          <Route path="affiliates" element={<AffiliateTab />} />
+          <Route path="postback-url" element={<PostbackTab />} />
+          
+          {/* Redirect to General tab by default */}
+          <Route index element={<Navigate to="detail" replace />} />
         </Route>
 
 

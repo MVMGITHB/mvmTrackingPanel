@@ -7,7 +7,7 @@ import DashboardStats from "../Dashboard1/DashboardStats.jsx";
 
 const StatisticsPage = ({id}) => {
   return (
-    <div className="px-4 md:px-6 lg:px-12 mt-8 ">
+    <div className="mt-8 ">
       {/* <h1
         className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4
         text-gray-900 dark:text-gray-100 tracking-tight leading-tight"

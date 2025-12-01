@@ -1,47 +1,63 @@
-// pages/AdvertisersList.jsx
 import { useEffect, useState } from "react";
-import { Button, Popconfirm, Table, message } from "antd";
+import { Button, Popconfirm, Table, message, Input, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-// const baseurl = "http://localhost:5000"; // Change if needed
 import { baseurl } from "../../helper/Helper";
 
 export default function AffiliateList() {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+
   const navigate = useNavigate();
 
-  // Fetch advertisers from backend
-  const fetchAdvertisers = async () => {
+  // Fetch affiliates
+  const fetchAffiliates = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${baseurl}/api/affiliates/getAllAffiliate`);
-      console.log("data---", res.data);
       setData(res.data);
+      setFilteredData(res.data);
     } catch (err) {
       console.error(err);
-      message.error("Failed to load advertisers.");
+      message.error("Failed to load affiliates.");
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchAdvertisers();
+    fetchAffiliates();
   }, []);
 
-   const handleDelete = async (id) => {
+  // Filtering logic
+  useEffect(() => {
+    const keyword = search.toLowerCase().trim();
+
+    const filtered = data.filter((item) => {
+      const nameMatch = item.affiliateName?.toLowerCase().includes(keyword);
+      const firstNameMatch = item.firstname?.toLowerCase().includes(keyword);
+      const pubIdMatch = item.pubId?.toString().includes(keyword);
+
+      return nameMatch || firstNameMatch || pubIdMatch;
+    });
+
+    setFilteredData(filtered);
+  }, [search, data]);
+
+  // Delete affiliate
+  const handleDelete = async (id) => {
     try {
       await axios.delete(`${baseurl}/api/affiliates/deleteAffiliate/${id}`);
       message.success("Affiliate deleted.");
-      fetchAdvertisers();
+      fetchAffiliates();
     } catch (err) {
       console.error(err);
       message.error("Failed to delete affiliate.");
     }
   };
 
-  // Ant Design table columns
+  // Table columns
   const columns = [
     {
       title: "Name",
@@ -56,6 +72,14 @@ export default function AffiliateList() {
       ),
     },
     {
+      title: "Publisher ID",
+      dataIndex: "pubId",
+    },
+    {
+      title: "First Name",
+      dataIndex: "firstname",
+    },
+    {
       title: "Status",
       dataIndex: "status",
     },
@@ -64,52 +88,61 @@ export default function AffiliateList() {
       dataIndex: ["manager", "name"],
       render: (_, record) => record.manager?.name || "N/A",
     },
-
-     {
-      title: "Delete",
-      render: (_, record) => (
-        <Popconfirm
-          title="Delete this affiliate?"
-          onConfirm={() => handleDelete(record._id)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button danger type="link">
-            Delete
-          </Button>
-        </Popconfirm>
-      ),
-    },
+    // {
+    //   title: "Delete",
+    //   render: (_, record) => (
+    //     <Popconfirm
+    //       title="Delete this affiliate?"
+    //       onConfirm={() => handleDelete(record._id)}
+    //       okText="Yes"
+    //       cancelText="No"
+    //     >
+    //       <Button danger type="link">
+    //         Delete
+    //       </Button>
+    //     </Popconfirm>
+    //   ),
+    // },
   ];
 
   return (
-    <div style={{ padding: "20px" }} className="bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff]">
-         <div className="flex items-center justify-between mb-6">
-      {/* Left - Title */}
-      <h2 className="text-2xl font-bold text-gray-800">
-        Affiliate
-      </h2>
+    <div
+      style={{ padding: "20px" }}
+      className="bg-gradient-to-b from-[#e8f1ff] via-[#f4f8ff] to-[#ffffff]"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Affiliates</h2>
 
-      {/* Right - Create Button */}
-      <button
-        onClick={() => navigate("/affiliates/create")}
-        className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition duration-200"
-      >
-        + Create
-      </button>
-    </div>
+        <button
+          onClick={() => navigate("/affiliates/create")}
+          className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition duration-200"
+        >
+          + Create
+        </button>
+      </div>
 
-      
-  <Table
-  className="custom-table"
-  columns={columns}
-  dataSource={data}
-  rowKey="_id"
-  loading={loading}
-  bordered
-/>
+      {/* 🔍 Search Bar */}
+      <Row gutter={16} className="mb-4">
+        <Col span={8}>
+          <Input
+            placeholder="Search by name, first name, or pubId..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            allowClear
+          />
+        </Col>
+      </Row>
 
-
+      {/* Table */}
+      <Table
+        className="custom-table"
+        columns={columns}
+        dataSource={filteredData}
+        rowKey="_id"
+        loading={loading}
+        bordered
+      />
     </div>
   );
 }

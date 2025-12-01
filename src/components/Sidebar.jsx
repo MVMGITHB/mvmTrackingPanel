@@ -7,14 +7,15 @@ const navItems = [
   { name: "Advertisers", path: "/advertisers", icon: <FaBullhorn /> },
   { name: "Affiliates", path: "/affiliates", icon: <FaUsers /> },
   { name: "Offers", path: "/offers", icon: <FaGift /> },
+  { name: "click", path: "/click", icon: <FaGift /> },
 ];
 
 const Sidebar = () => {
   return (
     <div
       className="
-        w-64 h-[90vh] sticky top-20 
-        bg-gradient-to-b from-[#0f172a] to-[#1e293b]
+        w-64 h-[100vh] sticky
+        bg-sky-200 
         text-white shadow-xl p-4 
         transition-all duration-300
       "
@@ -23,6 +24,30 @@ const Sidebar = () => {
       {/* <h1 className="text-2xl font-extrabold mb-10 text-center tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-sky-300">
         Tracking Panel
       </h1> */}
+
+      <div 
+        className="flex items-center gap-3 cursor-pointer group"
+        onClick={() => navigate("/")}
+      >
+        <img
+          src="https://mvmbs.com/images/logo.webp"
+          alt="logo"
+          className="
+            w-[55px] h-[55px]
+           "
+        />
+
+        {/* <h1
+          className="
+            text-2xl font-extrabold 
+            bg-gradient-to-r from-blue-300 to-sky-400
+            bg-clip-text text-transparent
+            tracking-wide
+          "
+        >
+          Tracking Panel
+        </h1> */}
+      </div>
 
       {/* Navigation */}
       <nav className="flex flex-col gap-3">
@@ -37,8 +62,8 @@ const Sidebar = () => {
                 
                 ${
                   isActive
-                    ? "bg-blue-500/20 text-blue-300 shadow-inner"
-                    : "text-gray-300 hover:text-white hover:bg-white/10"
+                    ? "bg-sky-700 text-black shadow-inner"
+                    : "text-black hover:text-black hover:bg-white/10"
                 }
               `
             }
