@@ -14,6 +14,7 @@ import {
   Line,
 } from "recharts";
 import CampaignReport from "./campaignsreport";
+import { useAuth } from "../../context/auth";
 
 const StatisticsDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +25,8 @@ const StatisticsDashboard = () => {
   const [showCharts, setShowCharts] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [dateFilter, setDateFilter] = useState("today"); // today | last_week | last_month
-
+  
+   const [auth] = useAuth();
   // Format a Date as local YYYY-MM-DD (avoids UTC issues with toISOString)
   const formatLocalDate = (d) => {
     const yyyy = d.getFullYear();
@@ -35,6 +37,14 @@ const StatisticsDashboard = () => {
 
   // Fetch campaigns
   const fetchReport = async () => {
+    
+
+    const config = {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      };
+
     try {
       setLoading(true);
 
@@ -58,6 +68,7 @@ const StatisticsDashboard = () => {
           startDate: formatLocalDate(start),
           endDate: formatLocalDate(end),
         },
+        config,
       });
 
       if (response.data?.success) {
@@ -79,7 +90,7 @@ const StatisticsDashboard = () => {
   useEffect(() => {
     fetchReport();
     // re-fetch when dateFilter changes
-  }, [dateFilter]);
+  }, [dateFilter,auth.token]);
 
   if (loading) {
     return (

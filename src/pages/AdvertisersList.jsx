@@ -4,31 +4,54 @@ import { Table, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
+
 // const baseurl = "http://localhost:5000"; // Change if needed
 import { baseurl } from "../helper/Helper";
+import { useAuth } from "../context/auth";
 
 export default function AdvertisersList() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+   
+  const [auth, setAuth] = useAuth();
 
+  console.log(`Bearer ${auth?.token}`)
   // Fetch advertisers from backend
-  const fetchAdvertisers = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${baseurl}/api/advertisers/getAll`);
-      console.log("data---", res.data.data);
-      setData(res.data.data);
-    } catch (err) {
-      console.error(err);
-      message.error("Failed to load advertisers.");
-    }
-    setLoading(false);
-  };
+ const fetchAdvertisers = async () => {
+  if (!auth?.token) {
+    console.warn("No auth token found");
+    return;
+  }
 
-  useEffect(() => {
+  setLoading(true);
+  try {
+    const res = await axios.get(
+      `${baseurl}/api/advertisers/getAll`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    );
+
+    setData(res.data?.data || []);
+  } catch (err) {
+    console.error("API ERROR:", err.response?.data || err.message);
+    message.error("Unauthorized or session expired.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+ useEffect(() => {
+  if (auth?.token) {
     fetchAdvertisers();
-  }, []);
+  }
+}, [auth?.token]);
 
   // Ant Design table columns
   const columns = [
@@ -48,6 +71,12 @@ export default function AdvertisersList() {
       title: "Status",
       dataIndex: "status",
     },
+
+    {
+      title: "Advertise Id",
+      dataIndex: "AdId",
+    },
+
     {
       title: "Manager",
       dataIndex: ["manager", "name"],

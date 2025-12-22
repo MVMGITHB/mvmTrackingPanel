@@ -12,10 +12,11 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import OfferDetails from "../offerDetails/offerdetails";
-import api from "../baseurl/baseurl";
+import api, { setAuthToken } from "../baseurl/baseurl";
 import { baseurl } from "../../helper/Helper";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../../context/auth";
 
 // --- Helpers (same as OfferDetailsFull) ---
 function safeParse(raw) {
@@ -51,7 +52,7 @@ export default function OffersTable() {
   // }, []);
 
 
-
+const [auth] = useAuth();
 
 
   const { id  } = useParams();
@@ -66,13 +67,23 @@ export default function OffersTable() {
     const fetchAffiliate = async () => {
       try {
         const response = await axios.get(
-          `${baseurl}/api/affiliates/getOneAffiliate/${id}`
+          `${baseurl}/api/affiliates/getOneAffiliate/${id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
         );
+        
 
+      
         const data = response.data;
         setPubId(data?.pubId)
         setRow(data)
+
+          console.log("market place",data)
          
+
+          setAuthToken(auth.token)
 
         if(response?.data){
         try {
@@ -100,7 +111,7 @@ export default function OffersTable() {
     };
 
     fetchAffiliate();
-  }, [id,tab]);
+  }, [id,tab,auth.token]);
 
 
 

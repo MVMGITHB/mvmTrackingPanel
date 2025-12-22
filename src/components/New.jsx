@@ -2,44 +2,72 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import { baseurl } from "../helper/Helper";
+import { useAuth } from "../context/auth";
 
 export default function New() {
   const [formData, setFormData] = useState({
     name: "",
+     AdId: "",
     status: "Active",
     manager: "",
   });
   const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [auth, setAuth] = useAuth();
+
   console.log("managers",managers)
 
   // Fetch managers list
   useEffect(() => {
     axios
-      .get(`${baseurl}/api/users/getAllUser`)
+      .get(`${baseurl}/api/users/getAllUser`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
       .then((res) => setManagers(res.data))
       .catch((err) => console.error("Error fetching managers", err));
-  }, []);
+  },[auth?.token]);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await axios.post(`${baseurl}/api/advertisers/create`, formData);
-      alert("Advertiser created successfully!");
-      setFormData({ name: "", status: "Active", manager: "" });
-    } catch (err) {
-      console.error(err);
-      alert("Error creating advertiser");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    await axios.post(
+      `${baseurl}/api/advertisers/create`,
+      {
+        ...formData,
+        AdId: Number(formData.AdId), // ensure number
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    );
+
+    alert("Advertiser created successfully!");
+    setFormData({
+      name: "",
+      status: "Active",
+      manager: "",
+      AdId: "",
+    });
+  } catch (err) {
+    console.error("Create advertiser error:", err.response?.data || err);
+    alert(err.response?.data?.message || "Error creating advertiser");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const inputStyle =
     "w-full h-[50px] px-4 bg-gray-50 border border-gray-200 rounded-xl shadow-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200";
@@ -84,6 +112,21 @@ export default function New() {
             <option value="Rejected">Rejected</option>
           </select>
         </div>
+
+        <div>
+  <label className="block text-gray-700 font-semibold mb-2">
+    Advertiser ID<span className="text-red-500">*</span>
+  </label>
+  <input
+    type="number"
+    name="AdId"
+    value={formData.AdId}
+    onChange={handleChange}
+    className={inputStyle}
+    placeholder="Enter unique advertiser ID"
+    required
+  />
+</div>
 
         {/* Manager */}
         <div>

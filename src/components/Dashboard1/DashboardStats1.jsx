@@ -13,9 +13,11 @@ import {
 // import { baseurl } from "";
 import { baseurl } from "../../helper/Helper";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../context/auth";
 
 const DashboardStats = () => {
   const { id } = useParams();
+  const [auth] = useAuth();
 
   const [dailyStats, setDailyStats] = useState({
     clicks: 0,
@@ -29,66 +31,72 @@ const DashboardStats = () => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
+ useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
 
-        // ENDPOINTS (unchanged)
-        const [dailyRes, last10Res] = await Promise.all([
-          axios.get(`${baseurl}/api/reports/daily`),
-          axios.get(`${baseurl}/api/reports/last10days`),
-        ]);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      };
 
-        // DAILY STATS
-        const d = dailyRes.data || {};
-        const clicks = Number(d.clicks) || 0;
-        const hosts = Number(d.hosts) || 0;
-        const conversions = Number(d.conversions) || 0;
-        const secondConversions = Number(d.secondConversions) || 0;
-        const revenue = Number(d.revenue) || 0;
-        const secondRevenue = Number(d.secondRevenue) || 0;
+      // ✅ Correct Promise.all usage
+      const [dailyRes, last10Res] = await Promise.all([
+        axios.get(`${baseurl}/api/reports/daily`, config),
+        axios.get(`${baseurl}/api/reports/last10days`, config),
+      ]);
 
-        const totalConversions = conversions + secondConversions;
+      // DAILY STATS ---------------------------
+      const d = dailyRes.data || {};
 
-        setDailyStats({
-          clicks,
-          hosts,
-          conversions,
-          secondConversions,
-          revenue,
-          secondRevenue,
-          totalConversions,
-        });
+      const clicks = Number(d.clicks) || 0;
+      const hosts = Number(d.hosts) || 0;
+      const conversions = Number(d.conversions) || 0;
+      const secondConversions = Number(d.secondConversions) || 0;
+      const revenue = Number(d.revenue) || 0;
+      const secondRevenue = Number(d.secondRevenue) || 0;
 
-        // LAST 10 DAYS CHART DATA ---------------------------
-        const cleanData = (last10Res.data || []).map((item) => ({
-          ...item,
-          clicks: Number(item.clicks) || 0,
-          conversions: Number(item.conversions) || 0,
-          secondConversions: Number(item.secondConversions) || 0,
-          revenue: Number(item.revenue) || 0,
-          secondRevenue: Number(item.secondRevenue) || 0,
+      const totalConversions = conversions + secondConversions;
 
-          // NEW: combined conversions for graph
-          totalConversions:
-            (Number(item.conversions) || 0) +
-            (Number(item.secondConversions) || 0),
-        }));
+      setDailyStats({
+        clicks,
+        hosts,
+        conversions,
+        secondConversions,
+        revenue,
+        secondRevenue,
+        totalConversions,
+      });
 
-        setChartData(cleanData);
+      // LAST 10 DAYS CHART DATA ---------------------------
+      const cleanData = (last10Res.data || []).map((item) => ({
+        ...item,
+        clicks: Number(item.clicks) || 0,
+        conversions: Number(item.conversions) || 0,
+        secondConversions: Number(item.secondConversions) || 0,
+        revenue: Number(item.revenue) || 0,
+        secondRevenue: Number(item.secondRevenue) || 0,
+        totalConversions:
+          (Number(item.conversions) || 0) +
+          (Number(item.secondConversions) || 0),
+      }));
 
-        console.log("📊 Daily Stats:", dailyRes.data);
-        console.log("📈 Chart Data:", cleanData);
-      } catch (error) {
-        console.error("❌ Error fetching stats:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setChartData(cleanData);
 
-    fetchStats();
-  }, []); // keep unchanged
+      console.log("📊 Daily Stats:", d);
+      console.log("📈 Chart Data:", cleanData);
+    } catch (error) {
+      console.error("❌ Error fetching stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchStats();
+}, [auth.token]);
+ // keep unchanged
 
   if (loading) {
     return (

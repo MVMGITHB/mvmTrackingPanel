@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 export default function OfferGenral() {
   const { id } = useParams(); // edit mode ID
@@ -18,7 +19,7 @@ export default function OfferGenral() {
     payout: "",
     advertiser: "",
   });
-
+const [auth] = useAuth();
   const [advertisers, setAdvertisers] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -34,7 +35,11 @@ export default function OfferGenral() {
   // Fetch advertisers
   const fetchAdvertisers = async () => {
     try {
-      const res = await axios.get(`${baseurl}/api/advertisers/getAll`);
+      const res = await axios.get(`${baseurl}/api/advertisers/getAll`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       setAdvertisers(res.data.data || []);
     } catch (err) {
       console.error("Error fetching advertisers", err);
@@ -46,7 +51,11 @@ export default function OfferGenral() {
     if (!id) return;
     try {
       const res = await axios.get(
-        `${baseurl}/api/compaigns/getOneCompaign/${id}`
+        `${baseurl}/api/compaigns/getOneCompaign/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
       );
       const data = res.data.data;
 
@@ -90,7 +99,7 @@ export default function OfferGenral() {
       setInitialLoad(false);
     };
     loadData();
-  }, [id]);
+  }, [id,auth?.token]);
 
   // Build tracking URL dynamically (skip first load)
   useEffect(() => {

@@ -4,6 +4,7 @@ import { ClipboardCopy, RefreshCw, Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 // --- Helpers ---
 // function safeParse(raw) {
@@ -51,18 +52,23 @@ export default function OfferDetailsFull({ offer }) {
   // }, []);
 
 
+  const [auth] = useAuth();
   const { id } = useParams();
   
       useEffect(() => {
       const fetchAffiliate = async () => {
         try {
           const response = await axios.get(
-            `${baseurl}/api/affiliates/getOneAffiliate/${id}`
+            `${baseurl}/api/affiliates/getOneAffiliate/${id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
           );
   
           const data = response.data;
           setPubId(data?.pubId)
-          setRow(data)
+          // setRow(data)
   
   
         } catch (error) {
@@ -71,7 +77,7 @@ export default function OfferDetailsFull({ offer }) {
       };
   
       fetchAffiliate();
-    }, [id]);
+    }, [id,auth.token]);
 
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import { Button, Popconfirm, Table, message, Input, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 export default function AffiliateList() {
   const [data, setData] = useState([]);
@@ -10,13 +11,19 @@ export default function AffiliateList() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
+   const [auth] = useAuth();
+
   const navigate = useNavigate();
 
   // Fetch affiliates
   const fetchAffiliates = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${baseurl}/api/affiliates/getAllAffiliate`);
+      const res = await axios.get(`${baseurl}/api/affiliates/getAllAffiliate`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       setData(res.data);
       setFilteredData(res.data);
     } catch (err) {
@@ -48,7 +55,11 @@ export default function AffiliateList() {
   // Delete affiliate
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${baseurl}/api/affiliates/deleteAffiliate/${id}`);
+      await axios.delete(`${baseurl}/api/affiliates/deleteAffiliate/${id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       message.success("Affiliate deleted.");
       fetchAffiliates();
     } catch (err) {
@@ -88,6 +99,7 @@ export default function AffiliateList() {
       dataIndex: ["manager", "name"],
       render: (_, record) => record.manager?.name || "N/A",
     },
+    
     // {
     //   title: "Delete",
     //   render: (_, record) => (

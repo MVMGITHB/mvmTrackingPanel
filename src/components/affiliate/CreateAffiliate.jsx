@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 export default function CreateAffiliate() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,10 @@ export default function CreateAffiliate() {
     manager: "",
     postBackUrl: "",
   });
+
+  const [auth] = useAuth();
+
+
 
   const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +45,11 @@ export default function CreateAffiliate() {
   // Fetch managers list
   useEffect(() => {
     axios
-      .get(`${baseurl}/api/users/getAllUser`)
+      .get(`${baseurl}/api/users/getAllUser`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
       .then((res) => setManagers(res.data))
       .catch((err) => console.error("Error fetching managers", err));
   }, []);
@@ -53,7 +62,11 @@ export default function CreateAffiliate() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post(`${baseurl}/api/affiliates/affiliateRegister`, formData);
+      await axios.post(`${baseurl}/api/affiliates/affiliateRegister`, formData,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       alert("Affiliate created successfully!");
     } catch (err) {
       console.error(err);

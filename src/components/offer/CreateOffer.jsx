@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 export default function CreateOffer() {
   const [formData, setFormData] = useState({
@@ -19,6 +20,8 @@ export default function CreateOffer() {
   const [advertisers, setAdvertisers] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [auth] = useAuth();
+
   // Tracking URL builder state
   const [baseUrl, setBaseUrl] = useState("https://yourdomain.com/tracking");
   const [params, setParams] = useState([
@@ -29,7 +32,11 @@ export default function CreateOffer() {
 
    const fetchAdvertisers = async () => {
     try {
-      const res = await axios.get(`${baseurl}/api/advertisers/getAll`);
+      const res = await axios.get(`${baseurl}/api/advertisers/getAll`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       setAdvertisers(res.data.data || []);
     } catch (err) {
       console.error(err);
@@ -39,7 +46,7 @@ export default function CreateOffer() {
   useEffect(() => {
     
     fetchAdvertisers();
-  }, []);
+  }, [auth.token]);
 
   // Update tracking URL dynamically
   useEffect(() => {
@@ -56,10 +63,14 @@ export default function CreateOffer() {
   // Fetch advertisers
   useEffect(() => {
     axios
-      .get(`${baseurl}/api/advertisers/getAllAdvertisers`)
+      .get(`${baseurl}/api/advertisers/getAllAdvertisers`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
       .then((res) => setAdvertisers(res.data))
       .catch((err) => console.error("Error fetching advertisers", err));
-  }, []);
+  }, [auth.token]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -75,19 +86,30 @@ export default function CreateOffer() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await axios.post(`${baseurl}/api/compaigns/creteCompaign`, formData);
-      alert("Compaign created successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Error creating compaign");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    await axios.post(
+      `${baseurl}/api/compaigns/creteCompaign`,
+      formData, // request body
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    );
+
+    alert("Campaign created successfully!");
+  } catch (err) {
+    console.error(err);
+    alert("Error creating campaign");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const updateParam = (index, field, value) => {
     const updated = [...params];

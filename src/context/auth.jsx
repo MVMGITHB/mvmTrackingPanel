@@ -6,27 +6,37 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
     user: null,
-    token: "",
+    token: null,
   });
 
-  // Load auth from localStorage on initial mount
+  /**
+   * 🔐 Load auth from localStorage
+   */
   useEffect(() => {
-    const data = localStorage.getItem("auth");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      setAuth({
-        user: parsedData.user,
-        token: parsedData.token,
-      });
-      axios.defaults.headers.common["Authorization"] = parsedData.token;
+    const storedAuth = localStorage.getItem("auth");
+
+    if (storedAuth) {
+      const parsed = JSON.parse(storedAuth);
+
+      setAuth(parsed);
+
+      // ✅ MUST include Bearer
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${parsed.token}`;
     }
   }, []);
 
-  // Sync auth state to localStorage and axios headers
+  /**
+   * 🔄 Sync auth → localStorage & axios
+   */
   useEffect(() => {
-    if (auth.token) {
+    if (auth?.token) {
       localStorage.setItem("auth", JSON.stringify(auth));
-      axios.defaults.headers.common["Authorization"] = auth.token;
+
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${auth.token}`;
     } else {
       localStorage.removeItem("auth");
       delete axios.defaults.headers.common["Authorization"];
@@ -40,7 +50,6 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook
 const useAuth = () => useContext(AuthContext);
 
 export { useAuth, AuthProvider };

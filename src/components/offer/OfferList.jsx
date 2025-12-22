@@ -3,6 +3,7 @@ import { Button, Popconfirm, Table, message, Input, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 export default function OfferList() {
   const [data, setData] = useState([]);
@@ -10,25 +11,44 @@ export default function OfferList() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
+  
   const navigate = useNavigate();
+  
 
-  // Fetch all campaigns
-  const fetchCompaigns = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${baseurl}/api/compaigns/getALLCompaign`);
-      setData(res.data.data);
-      setFilteredData(res.data.data);
-    } catch (err) {
-      console.error(err);
-      message.error("Failed to load campaigns.");
-    }
+const [auth] = useAuth();
+
+// Fetch all campaigns
+const fetchCampaigns = async () => {
+  if (!auth?.token) return;
+
+  setLoading(true);
+  try {
+    const res = await axios.get(
+      `${baseurl}/api/compaigns/getALLCompaign`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    );
+
+    const campaigns = res.data?.data || [];
+    setData(campaigns);
+    setFilteredData(campaigns);
+  } catch (err) {
+    console.error("Fetch campaigns error:", err.response?.data || err);
+    message.error("Failed to load campaigns.");
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
-  useEffect(() => {
-    fetchCompaigns();
-  }, []);
+useEffect(() => {
+  if (auth?.token) {
+    fetchCampaigns();
+  }
+}, [auth?.token]);
+
 
   // Delete campaign
   const handleDelete = async (id) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../baseurl/baseurl.jsx";
+import api, { setAuthToken } from "../baseurl/baseurl.jsx";
 import toast from "react-hot-toast";
 import {
   BarChart,
@@ -14,6 +14,7 @@ import { Download, RefreshCw, BarChart3, Search } from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { baseurl } from "../../helper/Helper.jsx";
+import { useAuth } from "../../context/auth.jsx";
 
 // --- Helpers ---
 function safeParse(raw) {
@@ -39,7 +40,8 @@ const StatisticsDashboard = () => {
   const [showCharts, setShowCharts] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [dateFilter, setDateFilter] = useState("today");
-
+  
+  const [auth] = useAuth();
   const [pubId, setPubId] = useState();
 
 
@@ -49,7 +51,11 @@ const StatisticsDashboard = () => {
     const fetchAffiliate = async () => {
       try {
         const response = await axios.get(
-          `${baseurl}/api/affiliates/getOneAffiliate/${id}`
+          `${baseurl}/api/affiliates/getOneAffiliate/${id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
         );
 
         const data = response.data;
@@ -61,7 +67,7 @@ const StatisticsDashboard = () => {
     };
 
     fetchAffiliate();
-  }, [id]);
+  }, [id,auth.token]);
 
   const formatLocalDate = (d) => {
     const yyyy = d.getFullYear();
@@ -70,41 +76,47 @@ const StatisticsDashboard = () => {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  const fetchReport = async () => {
-    try {
-      setLoading(true);
-      const end = new Date();
-      const start = new Date(end);
+const fetchReport = async () => {
+  try {
+    setLoading(true);
 
-      if (dateFilter === "last_day") start.setDate(end.getDate() - 1);
-      if (dateFilter === "last_week") start.setDate(end.getDate() - 7);
-      if (dateFilter === "last_month") start.setMonth(end.getMonth() - 1);
+    const end = new Date();
+    const start = new Date(end);
 
-      const response = await api.get("/reports/publicerReport", {
-        params: {
-          pubId,
-          startDate: formatLocalDate(start),
-          endDate: formatLocalDate(end),
-        },
-      });
+    if (dateFilter === "last_day") start.setDate(end.getDate() - 1);
+    if (dateFilter === "last_week") start.setDate(end.getDate() - 7);
+    if (dateFilter === "last_month") start.setMonth(end.getMonth() - 1);
+    setAuthToken(auth.token)
+    const response = await api.get("/reports/publicerReport", {
+      params: {
+        pubId,
+        startDate: formatLocalDate(start),
+        endDate: formatLocalDate(end),
+      },
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    });
 
-      if (response.data?.success) {
-        setData(response.data.report || []);
-      } else {
-        toast.error(response.data?.message || "Failed to load report!");
-        setData([]);
-      }
-    } catch (err) {
-      toast.error("Error fetching publisher report");
+    if (response.data?.success) {
+      setData(response.data.report || []);
+    } else {
+      toast.error(response.data?.message || "Failed to load report!");
       setData([]);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    toast.error("Error fetching publisher report");
+    setData([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchReport();
-  }, [dateFilter, pubId]);
+  }, [dateFilter, pubId,auth.token]);
 
   if (loading)
     return (

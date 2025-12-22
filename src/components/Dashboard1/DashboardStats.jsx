@@ -13,9 +13,11 @@ import {
 // import { baseurl } from "";
 import { baseurl } from "../../helper/Helper";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../context/auth";
 
 const DashboardStats = () => {
   const { id } = useParams();
+   const [auth] = useAuth();
 
   const [dailyStats, setDailyStats] = useState({
     clicks: 0,
@@ -34,8 +36,14 @@ const DashboardStats = () => {
       try {
         setLoading(true);
 
+        const config = {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      };
+
         const response = await axios.get(
-          `${baseurl}/api/affiliates/getOneAffiliate/${id}`
+          `${baseurl}/api/affiliates/getOneAffiliate/${id}`,config
         );
 
         const pubId = response.data.pubId;
@@ -51,8 +59,8 @@ const DashboardStats = () => {
 
         // ✅ Correct endpoints
         const [dailyRes, last10Res] = await Promise.all([
-          axios.get(`${baseurl}/api/reports/dailypubId/${pubId}`),
-          axios.get(`${baseurl}/api/reports/last10dayspubId/${pubId}`),
+          axios.get(`${baseurl}/api/reports/dailypubId/${pubId}`,config),
+          axios.get(`${baseurl}/api/reports/last10dayspubId/${pubId}`,config),
         ]);
 
         // ✅ Daily stats with secondConversions / secondRevenue
@@ -98,7 +106,7 @@ const DashboardStats = () => {
     };
 
     fetchStats();
-  }, [id]); // keep id as dependency, everything else same
+  }, [id,auth.token]); // keep id as dependency, everything else same
 
   if (loading) {
     return (

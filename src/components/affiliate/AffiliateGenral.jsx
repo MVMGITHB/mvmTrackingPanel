@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { baseurl } from "../../helper/Helper";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../context/auth";
 
 export default function AffiliateGenral() {
   const { id } = useParams();
+
+   const [auth] = useAuth();
 
   const [formData, setFormData] = useState({
     firstname: "",
@@ -44,17 +47,25 @@ export default function AffiliateGenral() {
   // Fetch managers list
   useEffect(() => {
     axios
-      .get(`${baseurl}/api/users/getAllUser`)
+      .get(`${baseurl}/api/users/getAllUser`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
       .then((res) => setManagers(res.data))
       .catch((err) => console.error("Error fetching managers", err));
-  }, []);
+  }, [auth.token]);
 
   // Fetch affiliate by ID when editing
   useEffect(() => {
     if (!id) return;
 
     axios
-      .get(`${baseurl}/api/affiliates/getOneAffiliate/${id}`)
+      .get(`${baseurl}/api/affiliates/getOneAffiliate/${id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
       .then((res) => {
         const data = res.data;
 
@@ -93,7 +104,7 @@ export default function AffiliateGenral() {
       .catch((err) => {
         console.error("Error fetching affiliate by id", err);
       });
-  }, [id]);
+  }, [id,auth.token]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -105,7 +116,12 @@ export default function AffiliateGenral() {
     try {
       await axios.put(
         `${baseurl}/api/affiliates/updateAffiliate/${id}`,
-        formData
+        formData,
+        {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
       );
       alert("Affiliate updated successfully!");
     } catch (err) {

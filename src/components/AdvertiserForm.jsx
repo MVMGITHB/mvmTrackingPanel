@@ -2,65 +2,116 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { baseurl } from "../helper/Helper";
+import { useAuth } from "../context/auth";
 
 export default function AdvertiserForm() {
-  
-  const { id } = useParams(); // get id from URL
+  const [auth] = useAuth();
+  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     name: "",
+    AdId: "",
     status: "Active",
     manager: "",
   });
+
   const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch managers list
+  /* ================= FETCH MANAGERS ================= */
   useEffect(() => {
+    if (!auth?.token) return;
+
     axios
-      .get(`${baseurl}/api/users/getAllUser`)
-      .then((res) => setManagers(res.data))
-      .catch((err) => console.error("Error fetching managers", err));
-  }, []);
+      .get(`${baseurl}/api/users/getAllUser`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+      .then((res) => {
+        setManagers(res.data?.data || res.data || []);
+      })
+      .catch((err) =>
+        console.error("Error fetching managers", err.response?.data || err)
+      );
+  }, [auth?.token]);
 
-  // Fetch advertiser data if editing
+  /* ================= FETCH ADVERTISER (EDIT MODE) ================= */
   useEffect(() => {
-    if (id) {
-      axios
-        .get(`${baseurl}/api/advertisers/getOne/${id}`)
-        .then((res) => {
-          if (res.data && res.data.data) {
-            setFormData({
-              name: res.data.data.name || "",
-              status: res.data.data.status || "Active",
-              manager: res.data.data.manager._id || "",
-            });
-          }
-        })
-        .catch((err) => console.error("Error fetching advertiser", err));
-    }
-  }, [id]);
+    if (!id || !auth?.token) return;
 
+    axios
+      .get(`${baseurl}/api/advertisers/getOne/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+      .then((res) => {
+        const advertiser = res.data?.data;
+        if (advertiser) {
+          setFormData({
+            name: advertiser.name || "",
+            AdId: advertiser.AdId || "",
+            status: advertiser.status || "Active",
+            manager: advertiser.manager?._id || "",
+          });
+        }
+      })
+      .catch((err) =>
+        console.error("Error fetching advertiser", err.response?.data || err)
+      );
+  }, [id, auth?.token]);
+
+  /* ================= HANDLE INPUT ================= */
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  /* ================= HANDLE SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
+      const payload = {
+        ...formData,
+        AdId: Number(formData.AdId), // ✅ ENSURE NUMBER
+      };
+
       if (id) {
-        // update existing advertiser
-        await axios.patch(`${baseurl}/api/advertisers/update/${id}`, formData);
+        // UPDATE
+        await axios.patch(
+          `${baseurl}/api/advertisers/update/${id}`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
         alert("Advertiser updated successfully!");
       } else {
-        // create new advertiser
-        await axios.post(`${baseurl}/api/advertisers/create`, formData);
+        // CREATE
+        await axios.post(
+          `${baseurl}/api/advertisers/create`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
         alert("Advertiser created successfully!");
-        setFormData({ name: "", status: "Active", manager: "" });
+        setFormData({
+          name: "",
+          AdId: "",
+          status: "Active",
+          manager: "",
+        });
       }
     } catch (err) {
-      console.error(err);
-      alert("Error saving advertiser");
+      console.error("Save advertiser error:", err.response?.data || err);
+      alert(err.response?.data?.message || "Error saving advertiser");
     } finally {
       setLoading(false);
     }
@@ -70,10 +121,11 @@ export default function AdvertiserForm() {
     "w-full h-[50px] px-4 bg-gray-50 border border-gray-200 rounded-xl shadow-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all duration-200";
 
   return (
-    <div className=" mx-auto bg-white shadow-lg rounded-2xl p-8 mt-10">
+    <div className="mx-auto bg-white shadow-lg rounded-2xl p-8 mt-10">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">
         {id ? "Edit Advertiser" : "Create Advertiser"}
       </h2>
+
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Name */}
         <div>
@@ -86,8 +138,23 @@ export default function AdvertiserForm() {
             value={formData.name}
             onChange={handleChange}
             className={inputStyle}
-            placeholder="Enter advertiser name"
             required
+          />
+        </div>
+
+        {/* Ad ID */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-2">
+            Advertiser ID<span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            name="AdId"
+            value={formData.AdId}
+            onChange={handleChange}
+            className={inputStyle}
+            required
+            disabled={!!id} 
           />
         </div>
 
@@ -136,7 +203,7 @@ export default function AdvertiserForm() {
         <button
           type="submit"
           disabled={loading}
-          className=" w-[300px] mx-auto h-[50px] bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-md font-semibold disabled:opacity-50"
+          className="w-[300px] mx-auto h-[50px] bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-md font-semibold disabled:opacity-50"
         >
           {loading ? "Saving..." : "Save"}
         </button>

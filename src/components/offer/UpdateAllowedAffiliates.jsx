@@ -3,6 +3,7 @@ import { Select, Button, Spin } from "antd";
 import axios from "axios";
 import { toast } from "react-toastify"; // no toast.configure() here
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 const { Option } = Select;
 
@@ -12,10 +13,16 @@ const UpdateAllowedAffiliates = ({ compaignId }) => {
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
+   const [auth] = useAuth();
+
   // Fetch all affiliates
   const fetchAffiliates = async () => {
     try {
-      const res = await axios.get(`${baseurl}/api/affiliates/getAllAffiliate`);
+      const res = await axios.get(`${baseurl}/api/affiliates/getAllAffiliate`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       setAdvertisers(res.data || []);
     } catch (err) {
       console.error(err);
@@ -29,7 +36,11 @@ const UpdateAllowedAffiliates = ({ compaignId }) => {
   const fetchCompaign = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${baseurl}/api/compaigns/getOneCompaign/${compaignId}`);
+      const res = await axios.get(`${baseurl}/api/compaigns/getOneCompaign/${compaignId}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       const compaign = res.data.data;
       console.log(compaign)
       if (compaign && compaign.allowedAffiliates) {
@@ -46,26 +57,34 @@ const UpdateAllowedAffiliates = ({ compaignId }) => {
   useEffect(() => {
     fetchAffiliates();
     fetchCompaign();
-  }, [compaignId]);
+  }, [compaignId,auth.token]);
 
   console.log("selectedAffiliates",selectedAffiliates)
 
-  const handleUpdate = async () => {
-    
-    setUpdating(true);
-    try {
-      const res = await axios.patch(
-        `${baseurl}/api/compaigns/allowed-affiliates/${compaignId}`,
-        { allowedAffiliates: selectedAffiliates }
-      );
-      toast.success("Allowed affiliates updated successfully!");
-      console.log("Updated:", res.data);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update allowed affiliates.");
-    }
+ const handleUpdate = async () => {
+  setUpdating(true);
+
+  try {
+    const res = await axios.patch(
+      `${baseurl}/api/compaigns/allowed-affiliates/${compaignId}`,
+      { allowedAffiliates: selectedAffiliates },
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    );
+
+    toast.success("Allowed affiliates updated successfully!");
+    console.log("Updated:", res.data);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to update allowed affiliates.");
+  } finally {
     setUpdating(false);
-  };
+  }
+};
+
 
   return (
     <div className=" w-[80%] mx-auto bg-blue-50 shadow-lg p-6 rounded-lg mt-4">

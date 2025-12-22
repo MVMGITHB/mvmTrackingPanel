@@ -2,6 +2,7 @@ import axios from "axios";
 import React,{useEffect,useState} from "react";
 import { useParams } from "react-router-dom";
 import { baseurl } from "../../helper/Helper";
+import { useAuth } from "../../context/auth";
 
 const BalanceCard = () => {
   // Safe parse localStorage data
@@ -15,6 +16,8 @@ const BalanceCard = () => {
 
  const [stored, setStore] = useState(null);
 
+ const [auth] = useAuth();
+
 // useEffect(() => {
 //   const stored1 = safeParse(localStorage.getItem("user1"));
 //   setStore(stored1);
@@ -27,7 +30,11 @@ const BalanceCard = () => {
     const fetchAffiliate = async () => {
       try {
         const response = await axios.get(
-          `${baseurl}/api/affiliates/getOneAffiliate/${id}`
+          `${baseurl}/api/affiliates/getOneAffiliate/${id}`,{
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
         );
 
         const data = response.data;
@@ -45,7 +52,7 @@ const BalanceCard = () => {
     };
 
     fetchAffiliate();
-  }, [id]);
+  }, [id,auth.token]);
   
 
   return (
