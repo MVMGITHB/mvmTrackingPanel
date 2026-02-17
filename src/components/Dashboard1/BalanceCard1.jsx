@@ -26,6 +26,8 @@ console.log(stored)
           alt="avatar"
           className="w-14 h-14 rounded-full object-cover border"
         />
+
+        
         <div>
           <p className="text-gray-500 text-sm font-medium">Personal Manager</p>
           <h2 className="text-lg font-semibold text-gray-900">

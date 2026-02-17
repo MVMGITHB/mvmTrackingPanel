@@ -14,7 +14,10 @@ export default function New() {
   const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(false);
 
+
   const [auth, setAuth] = useAuth();
+
+  
 
   console.log("managers",managers)
 

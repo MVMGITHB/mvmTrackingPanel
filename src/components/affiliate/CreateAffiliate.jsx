@@ -18,8 +18,6 @@ export default function CreateAffiliate() {
 
   const [auth] = useAuth();
 
-
-
   const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -33,9 +31,9 @@ export default function CreateAffiliate() {
   // Generate full URL whenever baseUrl or params change
   useEffect(() => {
     const query = params
-  .filter((p) => p.key && p.value)
-  .map((p) => `${encodeURIComponent(p.key)}=${p.value.trim()}`)
-  .join("&");
+      .filter((p) => p.key && p.value)
+      .map((p) => `${encodeURIComponent(p.key)}=${p.value.trim()}`)
+      .join("&");
     setFormData((prev) => ({
       ...prev,
       postBackUrl: `${baseUrl}${query ? "?" + query : ""}`,
@@ -45,7 +43,7 @@ export default function CreateAffiliate() {
   // Fetch managers list
   useEffect(() => {
     axios
-      .get(`${baseurl}/api/users/getAllUser`,{
+      .get(`${baseurl}/api/users/getAllUser`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -62,11 +60,15 @@ export default function CreateAffiliate() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post(`${baseurl}/api/affiliates/affiliateRegister`, formData,{
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
+      await axios.post(
+        `${baseurl}/api/affiliates/affiliateRegister`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
         },
-      });
+      );
       alert("Affiliate created successfully!");
     } catch (err) {
       console.error(err);
@@ -95,11 +97,15 @@ export default function CreateAffiliate() {
 
   return (
     <div className="mx-auto bg-white shadow-lg rounded-2xl p-8 mt-10">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">Create Affiliate</h2>
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">
+        Create Affiliate
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* ==== Basic Affiliate Info ==== */}
 
-        <label className="block text-gray-700 font-semibold mb-2">First Name <span className="text-red-500">*</span></label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          First Name <span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           name="firstname"
@@ -110,8 +116,9 @@ export default function CreateAffiliate() {
           required
         />
 
-
-         <label className="block text-gray-700 font-semibold mb-2">Last Name <span className="text-red-500">*</span> </label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          Last Name <span className="text-red-500">*</span>{" "}
+        </label>
         <input
           type="text"
           name="lastName"
@@ -122,8 +129,9 @@ export default function CreateAffiliate() {
           required
         />
 
-
-        <label className="block text-gray-700 font-semibold mb-2">Affiliate Name <span className="text-red-500">*</span></label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          Affiliate Name <span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           name="affiliateName"
@@ -134,8 +142,9 @@ export default function CreateAffiliate() {
           required
         />
 
-
-        <label className="block text-gray-700 font-semibold mb-2">Email <span className="text-red-500">*</span></label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          Email <span className="text-red-500">*</span>
+        </label>
         <input
           type="email"
           name="email"
@@ -146,8 +155,9 @@ export default function CreateAffiliate() {
           required
         />
 
-
-         <label className="block text-gray-700 font-semibold mb-2">Password <span className="text-red-500">*</span></label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          Password <span className="text-red-500">*</span>
+        </label>
         <input
           type="password"
           name="password"
@@ -170,72 +180,69 @@ export default function CreateAffiliate() {
         {/* ==== Postback URL Builder ==== */}
         {/* Params */}
 
+        <div className="mt-3 space-y-2">
+          <label className="block text-gray-700 font-semibold mb-2">
+            Postback URL
+          </label>
 
+          {/* Base URL */}
+          <input
+            type="url"
+            value={baseUrl}
+            onChange={(e) => setBaseUrl(e.target.value)}
+            className={inputStyle}
+            placeholder="Enter base URL (e.g. https://yourdomain.com/postback)"
+          />
 
-<div className="mt-3 space-y-2">
-   
+          {params.map((p, i) => (
+            <div key={i} className="flex gap-2">
+              <input
+                type="text"
+                value={p.key}
+                onChange={(e) => updateParam(i, "key", e.target.value)}
+                className="flex-1 px-3 py-2 border rounded-lg"
+                placeholder="Parameter key"
+              />
+              <input
+                type="text"
+                value={p.value}
+                onChange={(e) => updateParam(i, "value", e.target.value)}
+                className="flex-1 px-3 py-2 border rounded-lg"
+                placeholder="Parameter value"
+              />
+              <button
+                type="button"
+                onClick={() => removeParam(i)}
+                className="px-3 py-2 bg-red-500 text-white rounded-lg"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addParam}
+            className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg"
+          >
+            + Add parameter
+          </button>
+        </div>
 
-   <label className="block text-gray-700 font-semibold mb-2">
-    Postback URL
-  </label>
-
-  {/* Base URL */}
-  <input
-    type="url"
-    value={baseUrl}
-    onChange={(e) => setBaseUrl(e.target.value)}
-    className={inputStyle}
-    placeholder="Enter base URL (e.g. https://yourdomain.com/postback)"
-  />
-
-  {params.map((p, i) => (
-    <div key={i} className="flex gap-2">
-      <input
-        type="text"
-        value={p.key}
-        onChange={(e) => updateParam(i, "key", e.target.value)}
-        className="flex-1 px-3 py-2 border rounded-lg"
-        placeholder="Parameter key"
-      />
-      <input
-        type="text"
-        value={p.value}
-        onChange={(e) => updateParam(i, "value", e.target.value)}
-        className="flex-1 px-3 py-2 border rounded-lg"
-        placeholder="Parameter value"
-      />
-      <button
-        type="button"
-        onClick={() => removeParam(i)}
-        className="px-3 py-2 bg-red-500 text-white rounded-lg"
-      >
-        ✕
-      </button>
-    </div>
-  ))}
-  <button
-    type="button"
-    onClick={addParam}
-    className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg"
-  >
-    + Add parameter
-  </button>
-</div>
-
-{/* Preview */}
-<p className="mt-3 text-sm text-gray-600 break-all">
-  <strong>Generated URL:</strong>{" "}
-  {baseUrl && params.length > 0
-    ? `${baseUrl}?${params
-        .filter((p) => p.key && p.value)
-        .map((p) => `${encodeURIComponent(p.key)}=${p.value}`)
-        .join("&")}`
-    : baseUrl}
-</p>
-
+        {/* Preview */}
+        <p className="mt-3 text-sm text-gray-600 break-all">
+          <strong>Generated URL:</strong>{" "}
+          {baseUrl && params.length > 0
+            ? `${baseUrl}?${params
+                .filter((p) => p.key && p.value)
+                .map((p) => `${encodeURIComponent(p.key)}=${p.value}`)
+                .join("&")}`
+            : baseUrl}
+        </p>
 
         {/* ==== Status + Manager ==== */}
-        <label className="block text-gray-700 font-semibold mb-2">Status <span className="text-red-500">*</span></label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          Status <span className="text-red-500">*</span>
+        </label>
         <select
           name="status"
           value={formData.status}
@@ -250,8 +257,9 @@ export default function CreateAffiliate() {
           <option value="Rejected">Rejected</option>
         </select>
 
-
-<label className="block text-gray-700 font-semibold mb-2">Manager <span className="text-red-500">*</span></label>
+        <label className="block text-gray-700 font-semibold mb-2">
+          Manager <span className="text-red-500">*</span>
+        </label>
         <select
           name="manager"
           value={formData.manager}
