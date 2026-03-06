@@ -17,8 +17,8 @@ import axios from "axios";
 
 // Create axios instance
 const api = axios.create({
-  baseURL: "http://localhost:5011/api",
-  // baseURL: "https://offer.mvmtracking.com/api",
+  // baseURL: "http://localhost:5011/api",
+  baseURL: "https://offer.mvmtracking.com/api",
 });
 
 // Attach token dynamically
